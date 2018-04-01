@@ -11,10 +11,13 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+use Illuminate\Support\Facades\Storage;
 
-Route::get('/capture', function (){
+Route::get('/', function (\Illuminate\Http\Request $request) {
     return view('capture');
 });
+
+Route::post('/', function (\Illuminate\Http\Request $request) {
+    Storage::disk('local')->putFileAs('images',$request->file('file'),$request->ip().'_'.strtotime('now').'.png');
+});
+
