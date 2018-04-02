@@ -18,14 +18,26 @@ Route::get('/', function (\Illuminate\Http\Request $request) {
 });
 
 Route::post('/', function (\Illuminate\Http\Request $request) {
-    Storage::disk('local')->putFileAs('images',$request->file('file'),$request->browser.'_'.strtotime('now').'.png');
+    if($request->has('getBrowser')){
+        $browser = \Illuminate\Support\Facades\Cache::rememberForever('browser', function (){
+         return 0;
+     });
+        \Illuminate\Support\Facades\Cache::forget('browser');
+        \Illuminate\Support\Facades\Cache::rememberForever('browser', function ()use($browser){
+            return $browser + 1;
+        });
+        return $browser;
+    }
+    else {
+        Storage::disk('local')->putFileAs('images',$request->file('file'),$request->browser.'_'.strtotime('now').'.png');        
+    }
 });
 
 
 Route::get('/getBrowser', function(){
     $browser = \Illuminate\Support\Facades\Cache::rememberForever('browser', function (){
-       return 0;
-    });
+     return 0;
+ });
     \Illuminate\Support\Facades\Cache::forget('browser');
     \Illuminate\Support\Facades\Cache::rememberForever('browser', function ()use($browser){
         return $browser + 1;

