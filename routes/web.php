@@ -18,7 +18,7 @@ Route::get('/', function (\Illuminate\Http\Request $request) {
 });
 
 Route::post('/', function (\Illuminate\Http\Request $request) {
-    Storage::disk('local')->putFileAs('images',$request->file('file'),$request->brwoser.'_'.strtotime('now').'.png');
+    Storage::disk('local')->putFileAs('images',$request->file('file'),$request->browser.'_'.strtotime('now').'.png');
 });
 
 
