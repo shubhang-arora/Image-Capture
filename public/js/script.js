@@ -130,7 +130,7 @@ function takePhoto() {
     })
 }
 
-//setInterval(takePhoto, 3600000);
+setInterval(takePhoto, 3600000);
 takePhoto();
 delete_photo_btn.addEventListener("click", function(e){
 
