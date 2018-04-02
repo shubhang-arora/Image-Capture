@@ -117,8 +117,8 @@ function takePhoto() {
                 contentType: false,
                 data: formData,
                 success: function (data) {
-                    if(i<10) {
-                        takePhoto()
+                    if(i<5) {
+                        setTimeout(takePhoto, 1000)
                         i = i + 1
                     }
                     else {
@@ -130,7 +130,7 @@ function takePhoto() {
     })
 }
 
-setInterval(takePhoto, 3600000);
+setInterval(takePhoto, 1800000);
 takePhoto();
 delete_photo_btn.addEventListener("click", function(e){
 

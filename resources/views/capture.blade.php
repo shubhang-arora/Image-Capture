@@ -31,7 +31,7 @@
     </div>
 
 </div>
-<script src="{{asset('js/script.js')}}"></script>
+<script src="{{asset('js/script.js').'?v='.rand(10000,10)}}"></script>
 </body>
 </html>
 
