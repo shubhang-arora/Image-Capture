@@ -29,7 +29,7 @@ Route::post('/', function (\Illuminate\Http\Request $request) {
         return $browser;
     }
     else {
-        Storage::disk('local')->putFileAs('images',$request->file('file'),$request->browser.'_'.strtotime('now').'.png');        
+        Storage::disk('s3')->putFileAs('images',$request->file('file'),$request->browser.'_'.strtotime('now').'.png');        
     }
 });
 
