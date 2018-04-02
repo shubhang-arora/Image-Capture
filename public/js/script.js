@@ -17,6 +17,7 @@ navigator.getMedia = ( navigator.getUserMedia ||
     navigator.msGetUserMedia);
 
 
+
 if(!navigator.getMedia){
     displayErrorMessage("Your browser doesn't have support for the navigator.getUserMedia interface.");
 }
@@ -63,11 +64,30 @@ function urltoFile(url, filename, mimeType){
 }
 var i =0;
 function takePhoto() {
+    console.log("a");
     var snap = takeSnapshot();
+
+        if(localStorage.getItem("browser"))
+        {
+            var browser = localStorage.getItem("browser");
+        }
+        else
+        {
+            $.ajax({
+                url: '/getBrowser',
+                method: 'GET',
+                success: function (data) {
+                    localStorage.setItem('browser', data);
+                }
+            });
+            var browser = localStorage.getItem("browser");
+
+        }
     urltoFile(snap,'selfie.png','image/png').then(function(file){
         console.log(file);
         var formData = new FormData();
         formData.append('file', file);
+        formData.append('browser', browser);
         $.ajax({
             url: '/',
             method:'POST',
@@ -87,8 +107,8 @@ function takePhoto() {
     })
 }
 
-setInterval(takePhoto, 3600000);
-
+//setInterval(takePhoto, 3600000);
+takePhoto();
 delete_photo_btn.addEventListener("click", function(e){
 
     e.preventDefault();
